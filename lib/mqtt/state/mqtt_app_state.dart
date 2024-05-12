@@ -10,7 +10,6 @@ class MQTTAppState with ChangeNotifier {
   final List<GpsResponseModel> _gpsHistory = [];
 
   void addGpsHistory(String message) {
-    print('hello');
     final gpsResponseModel = GpsResponseModel.fromJson(message);
     _gpsHistory.add(gpsResponseModel);
     notifyListeners();
