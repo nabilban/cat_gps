@@ -48,32 +48,35 @@ class _MyHomePageState extends State<HomePage> {
               icon: const Icon(Icons.widgets))
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: FlutterMap(
-          options: const MapOptions(
-            initialCenter: LatLng(-3.034442, 104.713087),
-            initialZoom: 10,
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.cat-gps.app',
+      body: Consumer<MQTTAppState>(builder: (context, state, widget) {
+        return Container(
+          padding: const EdgeInsets.all(10),
+          child: FlutterMap(
+            options: const MapOptions(
+              initialCenter: LatLng(-3.034442, 104.713087),
+              initialZoom: 10,
             ),
-            const MarkerLayer(
-              markers: [
-                Marker(
-                  point: LatLng(-3.034442, 104.713087),
-                  width: 200,
-                  height: 200,
-                  child:
-                      Icon(Icons.catching_pokemon, color: Colors.red, size: 25),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.cat-gps.app',
+              ),
+              if (state.gpsHistory.isNotEmpty)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: state.gpsHistory.last.latLng,
+                      width: 200,
+                      height: 200,
+                      child: const Icon(Icons.catching_pokemon,
+                          color: Colors.red, size: 25),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

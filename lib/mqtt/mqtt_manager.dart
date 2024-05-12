@@ -98,11 +98,12 @@ class MQTTManager {
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
 
       // final MqttPublishMessage recMess = c![0].payload;
-      final String pt =
+      final String receivedMessage =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      _currentState.setReceivedText(pt);
+
+      _currentState.addGpsHistory(receivedMessage);
       debugPrint(
-          'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
+          'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $receivedMessage -->');
       debugPrint('');
     });
     debugPrint(

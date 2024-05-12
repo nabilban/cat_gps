@@ -1,3 +1,4 @@
+import 'package:cat_gps/mqtt/model/gps_response_model.dart';
 import 'package:flutter/cupertino.dart';
 
 enum MQTTAppConnectionState { connected, disconnected, connecting }
@@ -5,12 +6,13 @@ enum MQTTAppConnectionState { connected, disconnected, connecting }
 class MQTTAppState with ChangeNotifier {
   MQTTAppConnectionState _appConnectionState =
       MQTTAppConnectionState.disconnected;
-  String _receivedText = '';
-  String _historyText = '';
 
-  void setReceivedText(String text) {
-    _receivedText = text;
-    _historyText = '$_historyText\n$_receivedText';
+  final List<GpsResponseModel> _gpsHistory = [];
+
+  void addGpsHistory(String message) {
+    print('hello');
+    final gpsResponseModel = GpsResponseModel.fromJson(message);
+    _gpsHistory.add(gpsResponseModel);
     notifyListeners();
   }
 
@@ -19,7 +21,7 @@ class MQTTAppState with ChangeNotifier {
     notifyListeners();
   }
 
-  String get getReceivedText => _receivedText;
-  String get getHistoryText => _historyText;
+  List<GpsResponseModel> get gpsHistory => _gpsHistory;
+
   MQTTAppConnectionState get getAppConnectionState => _appConnectionState;
 }
