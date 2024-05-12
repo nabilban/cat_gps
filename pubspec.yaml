@@ -38,6 +38,8 @@ dependencies:
   flutter_map: ^6.1.0
   mqtt_client: ^10.2.1
   latlong2: ^0.9.1
+  provider: ^6.1.2
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
