@@ -16,11 +16,7 @@ class HomePage extends StatefulWidget {
 class _MyHomePageState extends State<HomePage> {
   late MQTTManager manager;
   late MQTTAppState appState;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
+  final MapController mapController = MapController();
 
   void configAndConnect() {
     manager = MQTTManager(
@@ -33,6 +29,12 @@ class _MyHomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    Future.delayed(const Duration(seconds: 3), () => configAndConnect());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     appState = Provider.of<MQTTAppState>(context);
 
@@ -41,17 +43,33 @@ class _MyHomePageState extends State<HomePage> {
         title: const Text('Cat GPS'),
         backgroundColor: Colors.yellow.shade200,
         actions: [
-          IconButton.outlined(
-              onPressed: () {
-                configAndConnect();
-              },
-              icon: const Icon(Icons.widgets))
+          Row(
+            children: [
+              const Text('Connection: '),
+              Consumer<MQTTAppState>(
+                builder: (context, state, widget) {
+                  return Text(
+                    state.getAppConnectionState.toString().split('.').last,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () {
+                  manager.connect();
+                },
+              ),
+            ],
+          ),
         ],
       ),
       body: Consumer<MQTTAppState>(builder: (context, state, widget) {
         return Container(
           padding: const EdgeInsets.all(10),
           child: FlutterMap(
+            mapController: mapController,
             options: const MapOptions(
               initialCenter: LatLng(-3.034442, 104.713087),
               initialZoom: 10,
@@ -63,15 +81,17 @@ class _MyHomePageState extends State<HomePage> {
               ),
               if (state.gpsHistory.isNotEmpty)
                 MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: state.gpsHistory.last.latLng,
-                      width: 200,
-                      height: 200,
-                      child: const Icon(Icons.catching_pokemon,
-                          color: Colors.red, size: 25),
-                    ),
-                  ],
+                  markers: state.gpsHistory
+                      .map(
+                        (e) => Marker(
+                          point: e.latLng,
+                          width: 200,
+                          height: 200,
+                          child: const Icon(Icons.catching_pokemon,
+                              color: Colors.red, size: 25),
+                        ),
+                      )
+                      .toList(),
                 ),
             ],
           ),

@@ -11,6 +11,7 @@ class MQTTAppState with ChangeNotifier {
 
   void addGpsHistory(String message) {
     final gpsResponseModel = GpsResponseModel.fromJson(message);
+    _gpsHistory.removeWhere((element) => element.id == gpsResponseModel.id);
     _gpsHistory.add(gpsResponseModel);
     notifyListeners();
   }

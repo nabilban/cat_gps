@@ -42,7 +42,7 @@ class MQTTManager {
         .withWillMessage('My Will message')
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atLeastOnce);
-    debugPrint('EXAMPLE::Mosquitto client connecting....');
+    debugPrint('Mosquitto client connecting....');
     _client!.connectionMessage = connMess;
   }
 
@@ -51,11 +51,12 @@ class MQTTManager {
   void connect() async {
     assert(_client != null);
     try {
-      debugPrint('EXAMPLE::Mosquitto start client connecting....');
+      debugPrint('Mosquitto start client connecting....');
       _currentState.setAppConnectionState(MQTTAppConnectionState.connecting);
       await _client!.connect();
+      debugPrint('connected');
     } on Exception catch (e) {
-      debugPrint('EXAMPLE::client exception - $e');
+      debugPrint('client exception - $e');
       disconnect();
     }
   }
@@ -73,17 +74,15 @@ class MQTTManager {
 
   /// The subscribed callback
   void onSubscribed(String topic) {
-    debugPrint('EXAMPLE::Subscription confirmed for topic $topic');
+    debugPrint('Subscription confirmed for topic $topic');
   }
 
   /// The unsolicited disconnect callback
   void onDisconnected() {
-    debugPrint(
-        'EXAMPLE::OnDisconnected client callback - Client disconnection');
+    debugPrint('OnDisconnected client callback - Client disconnection');
     if (_client!.connectionStatus!.returnCode ==
         MqttConnectReturnCode.noneSpecified) {
-      debugPrint(
-          'EXAMPLE::OnDisconnected callback is solicited, this is correct');
+      debugPrint('OnDisconnected callback is solicited, this is correct');
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
   }
@@ -91,7 +90,7 @@ class MQTTManager {
   /// The successful connect callback
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
-    debugPrint('EXAMPLE::Mosquitto client connected....');
+    debugPrint('Mosquitto client connected....');
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
       // ignore: avoid_as
@@ -103,11 +102,10 @@ class MQTTManager {
 
       _currentState.addGpsHistory(receivedMessage);
       debugPrint(
-          'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $receivedMessage -->');
+          'Change notification:: topic is <${c[0].topic}>, payload is <-- $receivedMessage -->');
       debugPrint('');
     });
-    debugPrint(
-        'EXAMPLE::OnConnected client callback - Client connection was sucessful');
+    debugPrint('OnConnected client callback - Client connection was sucessful');
   }
 }
 
