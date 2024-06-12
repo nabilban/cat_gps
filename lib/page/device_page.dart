@@ -1,5 +1,7 @@
+import 'package:cat_gps/model/gps_detail.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 class DevicePage extends StatefulWidget {
   const DevicePage({super.key, required this.device});
@@ -10,7 +12,7 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
-  List<String> deviceHistory = [];
+  List<GpsDetail> deviceHistory = [];
   bool isLoading = true;
 
   @override
@@ -25,8 +27,18 @@ class _DevicePageState extends State<DevicePage> {
           .get('https://gps.nabilban.lol/api/gps-data?id=${widget.device}');
       setState(() {
         isLoading = false;
-        deviceHistory = List<String>.from(response.data);
-        print('print $deviceHistory');
+        deviceHistory = List<GpsDetail>.from(
+          response.data.map(
+            (item) => GpsDetail(
+              id: item['id'] as String,
+              latlng: LatLng(
+                item['data']['lat'] as double,
+                item['data']['lng'] as double,
+              ),
+              timeStamp: DateTime.parse(item['data']['timestamp']),
+            ),
+          ),
+        );
       });
     } catch (e) {
       setState(() {
@@ -45,21 +57,22 @@ class _DevicePageState extends State<DevicePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('This is the history of ${widget.device} : '),
           Expanded(
             child: ListView.builder(
               itemCount: deviceHistory.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                    title: Text('Location $index'),
-                    subtitle: Column(
+                  title: Text('Location $index'),
+                  subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Latitude: ${deviceHistory[index]}'),
-                        Text('Longitude: ${deviceHistory[index]}'),
-                        Text('Time: ${deviceHistory[index]}'),
-                      ],
-                    ));
+                        Text(
+                            'Latitude: ${deviceHistory[index].latlng.latitude}'),
+                        Text(
+                            'Longitude: ${deviceHistory[index].latlng.longitude}'),
+                        Text('Time: ${deviceHistory[index].timeStamp}'),
+                      ]),
+                );
               },
             ),
           ),
