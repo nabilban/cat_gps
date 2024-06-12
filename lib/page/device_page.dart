@@ -1,6 +1,7 @@
 import 'package:cat_gps/model/gps_detail.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class DevicePage extends StatefulWidget {
@@ -14,6 +15,8 @@ class DevicePage extends StatefulWidget {
 class _DevicePageState extends State<DevicePage> {
   List<GpsDetail> deviceHistory = [];
   bool isLoading = true;
+
+  final MapController mapController = MapController();
 
   @override
   void initState() {
@@ -54,27 +57,24 @@ class _DevicePageState extends State<DevicePage> {
         backgroundColor: Colors.yellow.shade200,
         title: Text('${widget.device} history'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: FlutterMap(
+        options: const MapOptions(
+          initialCenter: LatLng(-3.034442, 104.713087),
+          initialZoom: 20,
+        ),
         children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: deviceHistory.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('Location $index'),
-                  subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            'Latitude: ${deviceHistory[index].latlng.latitude}'),
-                        Text(
-                            'Longitude: ${deviceHistory[index].latlng.longitude}'),
-                        Text('Time: ${deviceHistory[index].timeStamp}'),
-                      ]),
-                );
-              },
-            ),
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.cat-gps.app',
+          ),
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: deviceHistory.map((e) => e.latlng).toList(),
+                strokeWidth: 3,
+                color: Colors.red,
+              ),
+            ],
           ),
         ],
       ),
