@@ -1,5 +1,6 @@
 import 'package:cat_gps/mqtt/mqtt_manager.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
+import 'package:cat_gps/page/select_device_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -97,6 +98,23 @@ class _MyHomePageState extends State<HomePage> {
           ),
         );
       }),
+      floatingActionButton: FilledButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.yellow.shade200),
+        ),
+        child: const Text(
+          'Select Device',
+          style: TextStyle(color: Colors.black),
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SelectDevicePage(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
