@@ -20,8 +20,6 @@ class _DevicePageState extends State<DevicePage> {
   List<GpsDetail> deviceHistory = [];
   bool isLoading = true;
 
-  DateTime startedDate = DateTime.now().subtract(const Duration(hours: 1));
-
   final MapController mapController = MapController();
 
   DateFilter? datefilter = DateFilter(
@@ -53,6 +51,7 @@ class _DevicePageState extends State<DevicePage> {
             ),
           ),
         );
+        deviceHistory.sort((a, b) => b.timeStamp.compareTo(a.timeStamp));
       });
     } catch (e) {
       setState(() {
