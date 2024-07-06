@@ -39,7 +39,8 @@ class _SelectDevicePageState extends State<SelectDevicePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: const Text('Select Device'),
+        title: Text('Select Device'.toUpperCase(),
+            style: const TextStyle(color: Colors.white)),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(

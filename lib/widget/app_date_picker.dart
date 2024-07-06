@@ -17,7 +17,7 @@ class _AppDatePickerState extends State<AppDatePicker> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now(),
     );
     if (picked != null && picked != (isStart ? _startDate : _endDate)) {
       setState(() {
@@ -80,7 +80,6 @@ class _AppDatePickerState extends State<AppDatePicker> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
