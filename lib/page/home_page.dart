@@ -34,7 +34,7 @@ class _MyHomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Future.delayed(const Duration(seconds: 3), () => configAndConnect());
+    Future.delayed(const Duration(seconds: 3), () => configAndConnect());
   }
 
   @override
@@ -69,35 +69,40 @@ class _MyHomePageState extends State<HomePage> {
         ],
       ),
       body: Consumer<MQTTAppState>(builder: (context, state, widget) {
-        return Container(
-          padding: const EdgeInsets.all(10),
-          child: FlutterMap(
-            mapController: mapController,
-            options: const MapOptions(
-              initialCenter: LatLng(-3.034442, 104.713087),
-              initialZoom: 10,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.cat-gps.app',
-              ),
-              if (state.gpsHistory.isNotEmpty)
-                MarkerLayer(
-                  markers: state.gpsHistory
-                      .map(
-                        (e) => Marker(
-                          point: e.latLng,
-                          width: 200,
-                          height: 200,
-                          child: const Icon(Icons.catching_pokemon,
-                              color: Colors.red, size: 25),
-                        ),
-                      )
-                      .toList(),
+        return Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: FlutterMap(
+                mapController: mapController,
+                options: const MapOptions(
+                  initialCenter: LatLng(-3.034442, 104.713087),
+                  initialZoom: 10,
                 ),
-            ],
-          ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.cat-gps.app',
+                  ),
+                  if (state.gpsHistory.isNotEmpty)
+                    MarkerLayer(
+                      markers: state.gpsHistory
+                          .map(
+                            (e) => Marker(
+                              point: e.latLng!,
+                              width: 200,
+                              height: 200,
+                              child: const Icon(Icons.catching_pokemon,
+                                  color: Colors.red, size: 25),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                ],
+              ),
+            ),
+          ],
         );
       }),
       floatingActionButton: FilledButton(

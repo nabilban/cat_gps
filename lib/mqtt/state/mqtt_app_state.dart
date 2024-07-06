@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cat_gps/mqtt/model/gps_response_model.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -8,11 +10,32 @@ class MQTTAppState with ChangeNotifier {
       MQTTAppConnectionState.disconnected;
 
   final List<GpsResponseModel> _gpsHistory = [];
+  final List<GpsResponseModel> _gpsStatuses = [];
 
-  void addGpsHistory(String message) {
-    final gpsResponseModel = GpsResponseModel.fromJson(message);
+  void handleReceiveMessage(String message) {
+    final messageJson = jsonDecode(message);
+    if (messageJson['type'] == 'gps') {
+      if (messageJson['status']) {
+        handleSuccessMessage(messageJson);
+      } else {
+        handleFailedMessage(messageJson);
+      }
+    }
+  }
+
+  void handleSuccessMessage(Map<String, dynamic> messageJson) {
+    final gpsResponseModel = GpsResponseModel.fromSuccessJson(messageJson);
     _gpsHistory.removeWhere((element) => element.id == gpsResponseModel.id);
     _gpsHistory.add(gpsResponseModel);
+    _gpsStatuses.removeWhere((element) => element.id == gpsResponseModel.id);
+    _gpsStatuses.add(gpsResponseModel);
+    notifyListeners();
+  }
+
+  void handleFailedMessage(Map<String, dynamic> messageJson) {
+    final gpsResponseModel = GpsResponseModel.fromFailedJson(messageJson);
+    _gpsStatuses.removeWhere((element) => element.id == gpsResponseModel.id);
+    _gpsStatuses.add(gpsResponseModel);
     notifyListeners();
   }
 

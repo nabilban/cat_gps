@@ -29,7 +29,7 @@ class MQTTManager {
     _client!.keepAlivePeriod = 20;
     _client!.onDisconnected = onDisconnected;
     _client!.secure = false;
-    // _client!.logging(on: true);
+    _client!.logging(on: false);
 
     /// Add the successful connection callback
     _client!.onConnected = onConnected;
@@ -97,7 +97,7 @@ class MQTTManager {
       final String receivedMessage =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
-      _currentState.addGpsHistory(receivedMessage);
+      _currentState.handleReceiveMessage(receivedMessage);
     });
   }
 }
