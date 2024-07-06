@@ -1,5 +1,7 @@
+import 'package:cat_gps/helper/gps_helper.dart';
 import 'package:cat_gps/mqtt/model/gps_response_model.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
+import 'package:cat_gps/widget/device_info_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,11 +19,15 @@ class DevicesWidget extends StatelessWidget {
           child: Column(
             children: state.gpsDevices.map((device) {
               return ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => DeviceInfoDialog(device: device));
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    _connectionStatus(device),
+                    GPSHelper.connectionStatus(device),
                     const SizedBox(width: 8),
                     Text(device.id ?? 'unknown', style: _textStyle()),
                   ],
@@ -35,27 +41,6 @@ class DevicesWidget extends StatelessWidget {
   }
 
   TextStyle _textStyle() => const TextStyle(fontSize: 16);
-
-  DeviceStatus _getStatus(GpsResponseModel gps) {
-    if (gps.status) {
-      return DeviceStatus.connected;
-    }
-    if (DateTime.now().difference(gps.timeStamp!).inMinutes < 1) {
-      return DeviceStatus.lost;
-    }
-    return DeviceStatus.disconnect;
-  }
-
-  Widget _connectionStatus(GpsResponseModel gps) {
-    switch (_getStatus(gps)) {
-      case DeviceStatus.connected:
-        return const Text('🟢');
-      case DeviceStatus.disconnect:
-        return const Text('🔴');
-      case DeviceStatus.lost:
-        return const Text('🟡');
-      default:
-        return const Text('🟠');
-    }
-  }
 }
+
+class GpsHelper {}

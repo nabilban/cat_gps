@@ -1,6 +1,7 @@
 import 'package:cat_gps/mqtt/mqtt_manager.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
 import 'package:cat_gps/page/select_device_page.dart';
+import 'package:cat_gps/widget/device_info_dialog.dart';
 import 'package:cat_gps/widget/devices_widget.dart';
 import 'package:cat_gps/widget/pulse_animated_widget.dart';
 import 'package:flutter/material.dart';
@@ -94,11 +95,20 @@ class _MyHomePageState extends State<HomePage> {
                             point: e.latLng!,
                             child: Column(
                               children: [
-                                const PulseAnimatedWidget(
-                                  icon: Text(
-                                    '😸',
-                                    style: TextStyle(fontSize: 20),
-                                    textAlign: TextAlign.center,
+                                GestureDetector(
+                                  onLongPress: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DeviceInfoDialog(device: e),
+                                    );
+                                  },
+                                  child: const PulseAnimatedWidget(
+                                    icon: Text(
+                                      '😸',
+                                      style: TextStyle(fontSize: 20),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
                                 Text(e.id ?? 'unknown'),
