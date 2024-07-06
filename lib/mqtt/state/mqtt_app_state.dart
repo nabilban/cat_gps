@@ -45,6 +45,7 @@ class MQTTAppState with ChangeNotifier {
   }
 
   List<GpsResponseModel> get gpsHistory => _gpsHistory;
+  List<GpsResponseModel> get gpsDevices => _gpsStatuses;
 
   MQTTAppConnectionState get getAppConnectionState => _appConnectionState;
 }

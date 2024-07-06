@@ -2,6 +2,7 @@ import 'package:cat_gps/main.dart';
 import 'package:cat_gps/mqtt/mqtt_manager.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
 import 'package:cat_gps/page/select_device_page.dart';
+import 'package:cat_gps/widget/devices_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -71,36 +72,37 @@ class _MyHomePageState extends State<HomePage> {
       body: Consumer<MQTTAppState>(builder: (context, state, widget) {
         return Stack(
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: FlutterMap(
-                mapController: mapController,
-                options: const MapOptions(
-                  initialCenter: LatLng(-3.034442, 104.713087),
-                  initialZoom: 10,
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.cat-gps.app',
-                  ),
-                  if (state.gpsHistory.isNotEmpty)
-                    MarkerLayer(
-                      markers: state.gpsHistory
-                          .map(
-                            (e) => Marker(
-                              point: e.latLng!,
-                              width: 200,
-                              height: 200,
-                              child: const Icon(Icons.catching_pokemon,
-                                  color: Colors.red, size: 25),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                ],
+            FlutterMap(
+              mapController: mapController,
+              options: const MapOptions(
+                initialCenter: LatLng(-3.034442, 104.713087),
+                initialZoom: 10,
               ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.cat-gps.app',
+                ),
+                if (state.gpsHistory.isNotEmpty)
+                  MarkerLayer(
+                    markers: state.gpsHistory
+                        .map(
+                          (e) => Marker(
+                            point: e.latLng!,
+                            width: 200,
+                            height: 200,
+                            child: const Icon(Icons.catching_pokemon,
+                                color: Colors.red, size: 25),
+                          ),
+                        )
+                        .toList(),
+                  ),
+              ],
+            ),
+            const Positioned(
+              top: 10,
+              left: 10,
+              child: DevicesWidget(),
             ),
           ],
         );
