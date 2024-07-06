@@ -2,9 +2,7 @@ import 'package:cat_gps/model/date_filter.dart';
 import 'package:cat_gps/model/gps_detail.dart';
 import 'package:cat_gps/widget/app_date_picker.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -22,7 +20,7 @@ class _DevicePageState extends State<DevicePage> {
 
   final MapController mapController = MapController();
 
-  DateFilter? datefilter = DateFilter(
+  DateFilter datefilter = DateFilter(
       startDate: DateTime.now().subtract(const Duration(hours: 1)),
       endDate: DateTime.now());
 
@@ -35,23 +33,23 @@ class _DevicePageState extends State<DevicePage> {
   void getDeviceHistory() async {
     try {
       final response = await Dio().get(
-        'https://gps2.nabilban.lol/api/gps-data?id=${widget.device}&start=${datefilter?.startDate.toIso8601String()}&end=${datefilter?.endDate.toIso8601String()}',
+        'https://gps2.nabilban.lol/api/gps-data?id=${widget.device}&start=${datefilter.startDate.toIso8601String()}&end=${datefilter.endDate.toIso8601String()}',
       );
+      deviceHistory = List<GpsDetail>.from(
+        response.data.map(
+          (item) => GpsDetail(
+            id: item['id'] as String,
+            latlng: LatLng(
+              item['data']['lat'] as double,
+              item['data']['lng'] as double,
+            ),
+            timeStamp: DateTime.parse(item['data']['timestamp']),
+          ),
+        ),
+      );
+      deviceHistory.sort((a, b) => b.timeStamp.compareTo(a.timeStamp));
       setState(() {
         isLoading = false;
-        deviceHistory = List<GpsDetail>.from(
-          response.data.map(
-            (item) => GpsDetail(
-              id: item['id'] as String,
-              latlng: LatLng(
-                item['data']['lat'] as double,
-                item['data']['lng'] as double,
-              ),
-              timeStamp: DateTime.parse(item['data']['timestamp']),
-            ),
-          ),
-        );
-        deviceHistory.sort((a, b) => b.timeStamp.compareTo(a.timeStamp));
       });
     } catch (e) {
       setState(() {
@@ -76,7 +74,7 @@ class _DevicePageState extends State<DevicePage> {
               color: Colors.white,
             ),
             onPressed: () async {
-              final DateFilter data = await showDialog(
+              final DateFilter? data = await showDialog(
                 context: context,
                 builder: (context) {
                   return const AppDatePicker();
@@ -84,7 +82,7 @@ class _DevicePageState extends State<DevicePage> {
               );
               setState(
                 () {
-                  datefilter = data;
+                  datefilter = data ?? datefilter;
                 },
               );
               getDeviceHistory();
@@ -94,27 +92,41 @@ class _DevicePageState extends State<DevicePage> {
       ),
       body: Stack(
         children: [
-          FlutterMap(
-            options: const MapOptions(
-              initialCenter: LatLng(-3.034442, 104.713087),
-              initialZoom: 20,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.cat-gps.app',
-              ),
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: deviceHistory.map((e) => e.latlng).toList(),
-                    strokeWidth: 3,
-                    color: Colors.red,
+          deviceHistory.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : FlutterMap(
+                  options: MapOptions(
+                    initialCenter: deviceHistory.first.latlng,
+                    initialZoom: 20,
                   ),
-                ],
-              ),
-            ],
-          ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.cat-gps.app',
+                    ),
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: deviceHistory.map((e) => e.latlng).toList(),
+                          strokeWidth: 3,
+                          color: Colors.red,
+                        ),
+                      ],
+                    ),
+                    MarkerLayer(markers: [
+                      Marker(
+                        rotate: true,
+                        point: deviceHistory.first.latlng,
+                        child: const Text(
+                          '😸',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ])
+                  ],
+                ),
           Positioned(
             top: 10,
             left: 10,
@@ -135,8 +147,8 @@ class _DevicePageState extends State<DevicePage> {
                   ),
                   Column(
                     children: [
-                      Text(' : ${datefilter?.startDate}'.split('.').first),
-                      Text(' : ${datefilter?.endDate}'.split('.').first),
+                      Text(' : ${datefilter.startDate}'.split('.').first),
+                      Text(' : ${datefilter.endDate}'.split('.').first),
                     ],
                   ),
                 ],

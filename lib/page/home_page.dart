@@ -1,8 +1,8 @@
-import 'package:cat_gps/main.dart';
 import 'package:cat_gps/mqtt/mqtt_manager.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
 import 'package:cat_gps/page/select_device_page.dart';
 import 'package:cat_gps/widget/devices_widget.dart';
+import 'package:cat_gps/widget/pulse_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -88,11 +88,22 @@ class _MyHomePageState extends State<HomePage> {
                     markers: state.gpsHistory
                         .map(
                           (e) => Marker(
+                            rotate: true,
+                            width: 100,
+                            height: 50,
                             point: e.latLng!,
-                            width: 200,
-                            height: 200,
-                            child: const Icon(Icons.catching_pokemon,
-                                color: Colors.red, size: 25),
+                            child: Column(
+                              children: [
+                                const PulseAnimatedWidget(
+                                  icon: Text(
+                                    '😸',
+                                    style: TextStyle(fontSize: 20),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Text(e.id ?? 'unknown'),
+                              ],
+                            ),
                           ),
                         )
                         .toList(),

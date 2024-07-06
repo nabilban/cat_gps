@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:cat_gps/model/date_filter.dart';
 import 'package:flutter/material.dart';
 
@@ -9,13 +11,14 @@ class AppDatePicker extends StatefulWidget {
 }
 
 class _AppDatePickerState extends State<AppDatePicker> {
-  DateTime? _startDate;
-  DateTime? _endDate;
+  DateTime _startDate = DateTime.now().subtract(const Duration(hours: 1));
+  DateTime _endDate = DateTime.now();
 
-  Future<void> _selectDate(BuildContext context, bool isStart) async {
+  Future<void> _selectDate(
+      BuildContext context, bool isStart, DateTime initialDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: initialDate,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
@@ -26,42 +29,43 @@ class _AppDatePickerState extends State<AppDatePicker> {
             picked.year,
             picked.month,
             picked.day,
-            _startDate?.hour ?? 0,
-            _startDate?.minute ?? 0,
+            _startDate.hour,
+            _startDate.minute,
           );
         } else {
           _endDate = DateTime(
             picked.year,
             picked.month,
             picked.day,
-            _endDate?.hour ?? 0,
-            _endDate?.minute ?? 0,
+            _endDate.hour,
+            _endDate.minute,
           );
         }
       });
     }
   }
 
-  Future<void> _selectTime(BuildContext context, bool isStart) async {
+  Future<void> _selectTime(
+      BuildContext context, bool isStart, TimeOfDay initialtime) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: initialtime,
     );
     if (picked != null) {
       setState(() {
         if (isStart) {
           _startDate = DateTime(
-            _startDate?.year ?? DateTime.now().year,
-            _startDate?.month ?? DateTime.now().month,
-            _startDate?.day ?? DateTime.now().day,
+            _startDate.year,
+            _startDate.month,
+            _startDate.day,
             picked.hour,
             picked.minute,
           );
         } else {
           _endDate = DateTime(
-            _endDate?.year ?? DateTime.now().year,
-            _endDate?.month ?? DateTime.now().month,
-            _endDate?.day ?? DateTime.now().day,
+            _endDate.year,
+            _endDate.month,
+            _endDate.day,
             picked.hour,
             picked.minute,
           );
@@ -91,11 +95,12 @@ class _AppDatePickerState extends State<AppDatePicker> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                           _startDate != null
-                              ? _startDate!.toLocal().toString().split(' ')[0]
+                              ? _startDate.toLocal().toString().split(' ')[0]
                               : 'Not selected',
                         ),
                         TextButton(
-                          onPressed: () => _selectDate(context, true),
+                          onPressed: () =>
+                              _selectDate(context, true, _startDate),
                           child: const Icon(Icons.calendar_month_outlined),
                         ),
                       ],
@@ -110,12 +115,21 @@ class _AppDatePickerState extends State<AppDatePicker> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                           _startDate != null
-                              ? TimeOfDay.fromDateTime(_startDate!)
+                              ? TimeOfDay.fromDateTime(_startDate)
                                   .format(context)
                               : 'Not selected',
                         ),
                         TextButton(
-                          onPressed: () => _selectTime(context, true),
+                          onPressed: () => _selectTime(
+                            context,
+                            true,
+                            TimeOfDay(
+                              hour: TimeOfDay.now().hour != 0
+                                  ? TimeOfDay.now().hour
+                                  : 24 - 1,
+                              minute: TimeOfDay.now().minute,
+                            ),
+                          ),
                           child: const Icon(Icons.watch_later_outlined),
                         ),
                       ],
@@ -135,11 +149,12 @@ class _AppDatePickerState extends State<AppDatePicker> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                           _endDate != null
-                              ? _endDate!.toLocal().toString().split(' ')[0]
+                              ? _endDate.toLocal().toString().split(' ')[0]
                               : 'Not selected',
                         ),
                         TextButton(
-                          onPressed: () => _selectDate(context, false),
+                          onPressed: () =>
+                              _selectDate(context, false, _endDate),
                           child: const Icon(Icons.calendar_month_outlined),
                         ),
                       ],
@@ -154,12 +169,15 @@ class _AppDatePickerState extends State<AppDatePicker> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                           _endDate != null
-                              ? TimeOfDay.fromDateTime(_endDate!)
-                                  .format(context)
+                              ? TimeOfDay.fromDateTime(_endDate).format(context)
                               : 'Not selected',
                         ),
                         TextButton(
-                          onPressed: () => _selectTime(context, false),
+                          onPressed: () => _selectTime(
+                            context,
+                            false,
+                            TimeOfDay.now(),
+                          ),
                           child: const Icon(Icons.watch_later_outlined),
                         ),
                       ],
@@ -170,21 +188,12 @@ class _AppDatePickerState extends State<AppDatePicker> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  if (_startDate != null && _endDate != null) {
-                    Navigator.of(context).pop(
-                      DateFilter(
-                        startDate: _startDate!,
-                        endDate: _endDate!,
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Please select both start and end dates and times.'),
-                      ),
-                    );
-                  }
+                  Navigator.of(context).pop(
+                    DateFilter(
+                      startDate: _startDate,
+                      endDate: _endDate,
+                    ),
+                  );
                 },
                 child: const Text('Select Date'),
               ),
