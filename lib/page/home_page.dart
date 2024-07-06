@@ -49,7 +49,7 @@ class _MyHomePageState extends State<HomePage> {
         actions: [
           Row(
             children: [
-              const Text('Connection: '),
+              const Text('status: '),
               Consumer<MQTTAppState>(
                 builder: (context, state, widget) {
                   return Text(

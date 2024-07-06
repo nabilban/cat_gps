@@ -21,7 +21,8 @@ class _SelectDevicePageState extends State<SelectDevicePage> {
 
   Future<void> fetchDevices() async {
     try {
-      final response = await Dio().get('https://gps.nabilban.lol/api/devices/');
+      final response =
+          await Dio().get('https://gps2.nabilban.lol/api/devices/');
       setState(() {
         isLoading = false;
         devices = List<String>.from(response.data);
@@ -37,8 +38,9 @@ class _SelectDevicePageState extends State<SelectDevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.yellow.shade200,
-        title: const Text('Select Device'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text('Select Device'.toUpperCase(),
+            style: const TextStyle(color: Colors.white)),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(
