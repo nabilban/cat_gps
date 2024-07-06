@@ -34,20 +34,7 @@ class _MyHomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _checkForUpdates();
-    Future.delayed(const Duration(seconds: 3), () => configAndConnect());
-  }
-
-  Future<void> _checkForUpdates() async {
-    final isUpdateAvailable =
-        await shorebirdCodePush.isNewPatchAvailableForDownload();
-
-    if (isUpdateAvailable) {
-      await shorebirdCodePush.downloadUpdateIfAvailable();
-      setState(() {
-        shouldRestart = true;
-      });
-    }
+    // Future.delayed(const Duration(seconds: 3), () => configAndConnect());
   }
 
   @override
@@ -61,7 +48,7 @@ class _MyHomePageState extends State<HomePage> {
         actions: [
           Row(
             children: [
-              const Text('Connection: '),
+              const Text('status: '),
               Consumer<MQTTAppState>(
                 builder: (context, state, widget) {
                   return Text(

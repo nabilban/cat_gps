@@ -1,4 +1,6 @@
+import 'package:cat_gps/model/date_filter.dart';
 import 'package:cat_gps/model/gps_detail.dart';
+import 'package:cat_gps/widget/app_date_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -16,7 +18,11 @@ class _DevicePageState extends State<DevicePage> {
   List<GpsDetail> deviceHistory = [];
   bool isLoading = true;
 
+  DateTime startedDate = DateTime.now().subtract(const Duration(hours: 1));
+
   final MapController mapController = MapController();
+
+  DateFilter? datefilter;
 
   @override
   void initState() {
@@ -26,8 +32,9 @@ class _DevicePageState extends State<DevicePage> {
 
   void getDeviceHistory() async {
     try {
-      final response = await Dio()
-          .get('https://gps.nabilban.lol/api/gps-data?id=${widget.device}');
+      final response = await Dio().get(
+        'https://gps2.nabilban.lol/api/gps-data?id=${widget.device}&start=${datefilter?.startDate.toIso8601String()}&end=${datefilter?.endDate.toIso8601String()}',
+      );
       setState(() {
         isLoading = false;
         deviceHistory = List<GpsDetail>.from(
@@ -56,6 +63,25 @@ class _DevicePageState extends State<DevicePage> {
       appBar: AppBar(
         backgroundColor: Colors.yellow.shade200,
         title: Text('${widget.device} history'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today_outlined),
+            onPressed: () async {
+              final DateFilter data = await showDialog(
+                context: context,
+                builder: (context) {
+                  return const AppDatePicker();
+                },
+              );
+              setState(
+                () {
+                  datefilter = data;
+                },
+              );
+              getDeviceHistory();
+            },
+          )
+        ],
       ),
       body: FlutterMap(
         options: const MapOptions(

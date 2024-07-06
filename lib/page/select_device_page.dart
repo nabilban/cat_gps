@@ -21,7 +21,8 @@ class _SelectDevicePageState extends State<SelectDevicePage> {
 
   Future<void> fetchDevices() async {
     try {
-      final response = await Dio().get('https://gps.nabilban.lol/api/devices/');
+      final response =
+          await Dio().get('https://gps2.nabilban.lol/api/devices/');
       setState(() {
         isLoading = false;
         devices = List<String>.from(response.data);
