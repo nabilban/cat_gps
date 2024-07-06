@@ -38,7 +38,7 @@ class _SelectDevicePageState extends State<SelectDevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.yellow.shade200,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Select Device'),
       ),
       body: Container(

@@ -61,11 +61,14 @@ class _DevicePageState extends State<DevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.yellow.shade200,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text('${widget.device} history'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today_outlined),
+            icon: const Icon(
+              Icons.calendar_month_outlined,
+              color: Colors.white,
+            ),
             onPressed: () async {
               final DateFilter data = await showDialog(
                 context: context,
