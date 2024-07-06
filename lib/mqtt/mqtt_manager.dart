@@ -29,7 +29,7 @@ class MQTTManager {
     _client!.keepAlivePeriod = 20;
     _client!.onDisconnected = onDisconnected;
     _client!.secure = false;
-    _client!.logging(on: true);
+    // _client!.logging(on: true);
 
     /// Add the successful connection callback
     _client!.onConnected = onConnected;
@@ -90,22 +90,15 @@ class MQTTManager {
   /// The successful connect callback
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
-    debugPrint('Mosquitto client connected....');
     _client!.subscribe(_topic, MqttQos.atLeastOnce);
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-      // ignore: avoid_as
       final MqttPublishMessage recMess = c![0].payload as MqttPublishMessage;
 
-      // final MqttPublishMessage recMess = c![0].payload;
       final String receivedMessage =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
       _currentState.addGpsHistory(receivedMessage);
-      debugPrint(
-          'Change notification:: topic is <${c[0].topic}>, payload is <-- $receivedMessage -->');
-      debugPrint('');
     });
-    debugPrint('OnConnected client callback - Client connection was sucessful');
   }
 }
 

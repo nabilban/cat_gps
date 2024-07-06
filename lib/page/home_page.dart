@@ -1,3 +1,4 @@
+import 'package:cat_gps/main.dart';
 import 'package:cat_gps/mqtt/mqtt_manager.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
 import 'package:cat_gps/page/select_device_page.dart';
@@ -18,6 +19,7 @@ class _MyHomePageState extends State<HomePage> {
   late MQTTManager manager;
   late MQTTAppState appState;
   final MapController mapController = MapController();
+  bool shouldRestart = false;
 
   void configAndConnect() {
     manager = MQTTManager(
@@ -31,8 +33,21 @@ class _MyHomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    Future.delayed(const Duration(seconds: 3), () => configAndConnect());
     super.initState();
+    _checkForUpdates();
+    Future.delayed(const Duration(seconds: 3), () => configAndConnect());
+  }
+
+  Future<void> _checkForUpdates() async {
+    final isUpdateAvailable =
+        await shorebirdCodePush.isNewPatchAvailableForDownload();
+
+    if (isUpdateAvailable) {
+      await shorebirdCodePush.downloadUpdateIfAvailable();
+      setState(() {
+        shouldRestart = true;
+      });
+    }
   }
 
   @override
@@ -41,8 +56,8 @@ class _MyHomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cat GPS'),
-        backgroundColor: Colors.yellow.shade200,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(shouldRestart ? 'Please Restart' : 'GPS Kucing 😸'),
         actions: [
           Row(
             children: [
@@ -99,9 +114,6 @@ class _MyHomePageState extends State<HomePage> {
         );
       }),
       floatingActionButton: FilledButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.yellow.shade200),
-        ),
         child: const Text(
           'Select Device',
           style: TextStyle(color: Colors.black),
