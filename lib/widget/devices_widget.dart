@@ -1,5 +1,4 @@
 import 'package:cat_gps/helper/gps_helper.dart';
-import 'package:cat_gps/mqtt/model/gps_response_model.dart';
 import 'package:cat_gps/mqtt/state/mqtt_app_state.dart';
 import 'package:cat_gps/widget/device_info_dialog.dart';
 import 'package:flutter/material.dart';

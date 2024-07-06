@@ -14,7 +14,7 @@ class DeviceInfoDialog extends StatelessWidget {
       title: Row(
         children: [
           GPSHelper.connectionStatus(device),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             device.id ?? 'unknown',
             style: const TextStyle(fontWeight: FontWeight.bold),

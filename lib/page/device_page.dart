@@ -92,41 +92,46 @@ class _DevicePageState extends State<DevicePage> {
       ),
       body: Stack(
         children: [
-          deviceHistory.isEmpty
+          isLoading
               ? const Center(child: CircularProgressIndicator())
-              : FlutterMap(
-                  options: MapOptions(
-                    initialCenter: deviceHistory.first.latlng,
-                    initialZoom: 20,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.cat-gps.app',
-                    ),
-                    PolylineLayer(
-                      polylines: [
-                        Polyline(
-                          points: deviceHistory.map((e) => e.latlng).toList(),
-                          strokeWidth: 3,
-                          color: Colors.red,
+              : deviceHistory.isEmpty
+                  ? const Center(
+                      child: Text('No GPS History Found'),
+                    )
+                  : FlutterMap(
+                      options: MapOptions(
+                        initialCenter: deviceHistory.first.latlng,
+                        initialZoom: 20,
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.cat-gps.app',
                         ),
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points:
+                                  deviceHistory.map((e) => e.latlng).toList(),
+                              strokeWidth: 3,
+                              color: Colors.red,
+                            ),
+                          ],
+                        ),
+                        MarkerLayer(markers: [
+                          Marker(
+                            rotate: true,
+                            point: deviceHistory.first.latlng,
+                            child: const Text(
+                              '😸',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ])
                       ],
                     ),
-                    MarkerLayer(markers: [
-                      Marker(
-                        rotate: true,
-                        point: deviceHistory.first.latlng,
-                        child: const Text(
-                          '😸',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ])
-                  ],
-                ),
           Positioned(
             top: 10,
             left: 10,
