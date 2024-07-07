@@ -120,10 +120,16 @@ class _MyHomePageState extends State<HomePage> {
                   ),
               ],
             ),
-            const Positioned(
+            Positioned(
               top: 10,
               left: 10,
-              child: DevicesWidget(),
+              child: DevicesWidget(
+                onPresssed: (device) {
+                  if (device.latLng != null) {
+                    return mapController.move(device.latLng!, 20);
+                  }
+                },
+              ),
             ),
           ],
         );
