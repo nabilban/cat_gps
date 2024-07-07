@@ -124,9 +124,10 @@ class _AppDatePickerState extends State<AppDatePicker> {
                             context,
                             true,
                             TimeOfDay(
-                              hour: TimeOfDay.now().hour != 0
-                                  ? TimeOfDay.now().hour
-                                  : 24 - 1,
+                              hour: (TimeOfDay.now().hour != 0
+                                      ? TimeOfDay.now().hour
+                                      : 24) -
+                                  1,
                               minute: TimeOfDay.now().minute,
                             ),
                           ),
